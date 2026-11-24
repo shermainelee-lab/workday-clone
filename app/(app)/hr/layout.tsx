@@ -23,6 +23,15 @@ export default async function HrLayout({ children }: { children: React.ReactNode
         <Link className="btn secondary small" href="/hr/report">
           Monthly report
         </Link>
+        <Link className="btn secondary small" href="/hr/onboarding">
+          Onboarding
+        </Link>
+        <Link className="btn secondary small" href="/hr/performance">
+          Review cycles
+        </Link>
+        <Link className="btn secondary small" href="/hr/recruiting">
+          Recruiting
+        </Link>
       </div>
       {children}
     </>

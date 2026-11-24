@@ -7,7 +7,7 @@ import { ErrorList } from "@/components/ui";
 
 type Result = { ok?: boolean; errors?: string[] };
 
-function useRpc() {
+export function useRpc() {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const [busy, setBusy] = useState(false);

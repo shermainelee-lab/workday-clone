@@ -74,3 +74,9 @@ export function toCsv(rows: Row[], columns: { key: string; label: string }[]): s
   const body = rows.map((r) => columns.map((c) => csvEscape(r[c.key])).join(","));
   return [head, ...body].join("\r\n");
 }
+
+export const REVIEW_STATUS: Record<string, string> = {
+  pending_self: "Awaiting self review",
+  pending_manager: "Awaiting manager",
+  completed: "Complete",
+};

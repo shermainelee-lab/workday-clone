@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { ErrorList } from "@/components/ui";
 import { ROLE_LABEL, fmtDate, type Row } from "@/lib/format";
 
-function useDb() {
+export function useDb() {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const [errors, setErrors] = useState<string[]>([]);

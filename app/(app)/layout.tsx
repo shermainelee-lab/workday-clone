@@ -45,6 +45,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <Link href="/leave/new">Apply for leave</Link>
           <Link href="/leave">My leave</Link>
           <Link href="/calendar">Team calendar</Link>
+          <Link href="/directory">Directory</Link>
+          <Link href="/performance">Performance</Link>
+          <Link href="/onboarding">Onboarding</Link>
           <Link href="/claims/new">New claim</Link>
           <Link href="/claims">My claims</Link>
           <Link href="/approvals">

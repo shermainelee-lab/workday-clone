@@ -19,7 +19,7 @@ export default async function HrPerformancePage() {
   ]);
 
   const all = (reviews ?? []) as Row[];
-  const withCounts = ((cycles ?? []) as Row[]).map((c) => {
+  const withCounts: Row[] = ((cycles ?? []) as Row[]).map((c) => {
     const mine = all.filter((r) => r.cycle_id === c.id);
     return {
       ...c,

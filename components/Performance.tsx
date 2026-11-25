@@ -283,7 +283,7 @@ export function AckButton({ id, label }: { id: string; label: string }) {
 }
 
 // HR: attach the signed paper form and final rating to a past appraisal.
-export function HistoricalResultForm({ id, final, hasFile }: { id: string; final: number | null; hasFile: boolean }) {
+export function HistoricalResultForm({ id, final, hasFile, canRate, canFile }: { id: string; final: number | null; hasFile: boolean; canRate: boolean; canFile: boolean }) {
   const { supabase, errors: dbErrors, setErrors } = useDb();
   const { call, busy, errors } = useRpc();
   const [rating, setRating] = useState(final ? String(final) : "");
@@ -291,9 +291,10 @@ export function HistoricalResultForm({ id, final, hasFile }: { id: string; final
   return (
     <div className="card">
       <h2>Past appraisal record</h2>
-      <p className="muted small">Attach the signed form and enter the final overall rating from the paper appraisal.</p>
+      <p className="muted small">{canFile && canRate ? "Attach the signed form and enter the final overall rating from the paper appraisal." : canFile ? "Attach your signed appraisal form." : "Enter the final overall rating from the paper appraisal."}</p>
       <ErrorList errors={[...errors, ...dbErrors]} />
       <div className="row">
+        {canRate && (
         <div className="field">
           <label>Final overall rating</label>
           <select value={rating} onChange={(e) => setRating(e.target.value)}>
@@ -305,6 +306,8 @@ export function HistoricalResultForm({ id, final, hasFile }: { id: string; final
             ))}
           </select>
         </div>
+        )}
+        {canFile && (
         <div className="field" style={{ flex: 2 }}>
           <label>{hasFile ? "Replace the signed form" : "Signed form"} (PDF, Word or photo, up to 10 MB)</label>
           <input
@@ -327,14 +330,17 @@ export function HistoricalResultForm({ id, final, hasFile }: { id: string; final
                 setErrors([`Could not upload the file: ${error.message}`]);
                 return;
               }
-              call("set_historical_result", { p_id: id, p_final: rating ? Number(rating) : null, p_file: path });
+              call("set_historical_result", { p_id: id, p_final: null, p_file: path });
             }}
           />
         </div>
+        )}
       </div>
-      <button className="secondary" disabled={busy || uploading} onClick={() => call("set_historical_result", { p_id: id, p_final: rating ? Number(rating) : null, p_file: null })}>
-        Save rating
-      </button>
+      {canRate && (
+        <button className="secondary" disabled={busy || uploading || !rating} onClick={() => call("set_historical_result", { p_id: id, p_final: Number(rating), p_file: null })}>
+          Save rating
+        </button>
+      )}
     </div>
   );
 }

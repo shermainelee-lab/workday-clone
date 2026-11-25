@@ -252,7 +252,7 @@ begin
   if not found then return jsonb_build_object('ok', false, 'errors', jsonb_build_array('Request not found.')); end if;
   if r.status <> 'pending' then return jsonb_build_object('ok', false, 'errors', jsonb_build_array(format('This request is already %s.', r.status))); end if;
   if r.employee_id = me then return jsonb_build_object('ok', false, 'errors', jsonb_build_array('You cannot decide your own request.')); end if;
-  if not (me = r.approver_id or me = r.escalated_to or public.has_role('director','admin')) then
+  if not coalesce(me = r.approver_id or me = r.escalated_to or public.has_role('director','admin'), false) then
     return jsonb_build_object('ok', false, 'errors', jsonb_build_array('You are not the approver for this request.'));
   end if;
   if not p_approve and nullif(btrim(coalesce(p_remark, '')), '') is null then
@@ -377,7 +377,7 @@ begin
   if not found then return jsonb_build_object('ok', false, 'errors', jsonb_build_array('Claim not found.')); end if;
   if c.status <> 'pending' then return jsonb_build_object('ok', false, 'errors', jsonb_build_array(format('This claim is already %s.', c.status))); end if;
   if c.employee_id = me then return jsonb_build_object('ok', false, 'errors', jsonb_build_array('You cannot decide your own claim.')); end if;
-  if not (me = c.approver_id or me = c.escalated_to or public.has_role('director','admin')) then
+  if not coalesce(me = c.approver_id or me = c.escalated_to or public.has_role('director','admin'), false) then
     return jsonb_build_object('ok', false, 'errors', jsonb_build_array('You are not the approver for this claim.'));
   end if;
   if not p_approve and nullif(btrim(coalesce(p_remark, '')), '') is null then

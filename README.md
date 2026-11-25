@@ -23,6 +23,10 @@ It implements the workflows from the AIA activity sheets:
 
 Nobody can approve or pay their own request, enforced in the database.
 
+### Double approval
+
+On HR > Staff, tick **2nd approval** for anyone whose leave and claims need two approvals. Their manager approves first; the request then goes to the **Executive Director** (the active Director who reports to nobody) for the second approval. Leave is only booked, and a claim only goes to Finance, after the second approval. Either approver can reject (a remark is required). The same person can never give both approvals, and only the Executive Director (or Admin) can give the second one. Reminders and escalation restart when a request reaches the second approver. The setting is stamped on each request when it is submitted, so changing it later does not affect requests already in flight.
+
 ## Business rules (enforced in Postgres, not in the browser)
 
 Blocking errors, shown with a clear message and nothing saved:

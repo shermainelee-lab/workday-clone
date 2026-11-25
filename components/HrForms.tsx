@@ -223,6 +223,7 @@ export function StaffManager({ employees, departments }: { employees: Row[]; dep
               <th>Department</th>
               <th>Reports to</th>
               <th>Role</th>
+              <th title="Their leave and claims need a second approval from the Executive Director after their manager">2nd approval</th>
               <th>Joined</th>
               <th>Sign-in</th>
               <th>Active</th>
@@ -267,6 +268,15 @@ export function StaffManager({ employees, departments }: { employees: Row[]; dep
                       </option>
                     ))}
                   </select>
+                </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    aria-label="Needs second approval"
+                    checked={!!e.needs_second_approval}
+                    disabled={busy}
+                    onChange={(ev) => patch(e.id, { needs_second_approval: ev.target.checked })}
+                  />
                 </td>
                 <td className="nowrap">{fmtDate(e.join_date)}</td>
                 <td>{e.auth_user_id ? <span className="badge badge-approved">Linked</span> : <span className="badge">Not yet</span>}</td>

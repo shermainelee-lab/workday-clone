@@ -20,7 +20,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
   const open = r.cycle?.status === "open";
   const isSelf = r.employee_id === me.id;
   const canSelf = isSelf && open && r.status === "pending_self";
-  const canManager = !isSelf && open && r.status === "pending_manager" && (r.reviewer_id === me.id || ["hr", "admin"].includes(me.role));
+  const canManager = !isSelf && open && r.status === "pending_manager" && (r.reviewer_id === me.id || me.role === "hr");
 
   return (
     <>

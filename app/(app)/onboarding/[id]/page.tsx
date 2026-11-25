@@ -25,7 +25,7 @@ export default async function ChecklistPage({ params }: { params: Promise<{ id: 
   const today = todaySG();
   const rows = (tasks ?? []) as Row[];
   const done = rows.filter((t) => t.done_at).length;
-  const canCancel = ["hr", "admin"].includes(me.role) && list.status === "open";
+  const canCancel = me.role === "hr" && list.status === "open";
 
   return (
     <>

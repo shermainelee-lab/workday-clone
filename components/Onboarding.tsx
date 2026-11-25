@@ -9,9 +9,7 @@ import { type Row } from "@/lib/format";
 export const OWNER_LABEL: Record<string, string> = {
   employee: "The employee",
   manager: "Their manager",
-  hr: "HR",
-  finance: "Finance",
-  office_manager: "Office Manager",
+  hr: "HR & Finance",
 };
 
 // Tick a task done (or reopen it). The database decides who is allowed.

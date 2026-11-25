@@ -29,7 +29,7 @@ export default async function LeaveDetailPage({ params }: { params: Promise<{ id
 
   const mine = r.employee_id === me.id;
   const canDecide = canDecideRequest(r, me);
-  const canCancel = (mine || ["hr", "admin"].includes(me.role)) && (r.status === "pending" || (r.status === "approved" && r.end_date >= todaySG()));
+  const canCancel = (mine || me.role === "hr") && (r.status === "pending" || (r.status === "approved" && r.end_date >= todaySG()));
   const clashes = (r.clashes ?? []) as { name: string; start: string; end: string; status: string; ref: string }[];
 
   return (

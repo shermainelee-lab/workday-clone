@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireEmployee, FINANCE_ROLES, HR_VIEW_ROLES } from "@/lib/session";
+import { requireEmployee, canPayClaims, HR_VIEW_ROLES } from "@/lib/session";
 import { ROLE_LABEL } from "@/lib/format";
 import { signOut } from "@/app/actions";
 
@@ -54,7 +54,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             Approvals
             {approvals > 0 && <span className="count">{approvals}</span>}
           </Link>
-          {FINANCE_ROLES.includes(me.role) && <Link href="/finance">Finance</Link>}
+          {canPayClaims(me) && <Link href="/finance">Finance</Link>}
           {HR_VIEW_ROLES.includes(me.role) && <Link href="/hr">HR</Link>}
         </div>
       </nav>

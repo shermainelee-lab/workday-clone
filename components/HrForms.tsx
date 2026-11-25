@@ -224,6 +224,7 @@ export function StaffManager({ employees, departments }: { employees: Row[]; dep
               <th>Reports to</th>
               <th>Role</th>
               <th title="Their leave and claims need a second approval from the Executive Director after their manager">2nd approval</th>
+              <th title="Can record payment of approved claims (HR only)">Pays claims</th>
               <th>Joined</th>
               <th>Sign-in</th>
               <th>Active</th>
@@ -276,6 +277,15 @@ export function StaffManager({ employees, departments }: { employees: Row[]; dep
                     checked={!!e.needs_second_approval}
                     disabled={busy}
                     onChange={(ev) => patch(e.id, { needs_second_approval: ev.target.checked })}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    aria-label="Pays claims"
+                    checked={!!e.can_pay_claims}
+                    disabled={busy || e.role !== "hr"}
+                    onChange={(ev) => patch(e.id, { can_pay_claims: ev.target.checked })}
                   />
                 </td>
                 <td className="nowrap">{fmtDate(e.join_date)}</td>

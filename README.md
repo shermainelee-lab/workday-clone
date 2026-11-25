@@ -15,7 +15,7 @@ It implements the workflows from the AIA activity sheets:
 |---|---|
 | Employee | Apply for leave, submit claims, see own balances and requests, see the team calendar |
 | Approver (anyone with direct reports) | Approve or reject their reports' leave and claims (reject needs a remark) |
-| HR & Finance | Staff, entitlements, public holidays, Master Leave Record, monthly report, onboarding, performance, recruiting, pay or return approved claims, CSV export |
+| HR | Staff, entitlements, public holidays, Master Leave Record, monthly report, onboarding, performance, recruiting, CSV export. Tick **Pays claims** on HR > Staff for the HR person who also pays or returns approved claims (never their own) |
 | Director | Approves for people with no manager, can step in when an approver is away, read-only view of all leave |
 
 Nobody can approve or pay their own request, enforced in the database.

@@ -54,6 +54,36 @@ export function GenerateEntitlements({ year }: { year: number }) {
   );
 }
 
+// Year-end: carry unused annual leave from the previous year into this one (all of it, up to one year's entitlement).
+export function CarryForward({ year }: { year: number }) {
+  const { supabase, errors, busy, setErrors } = useDb();
+  const router = useRouter();
+  const [msg, setMsg] = useState<string | null>(null);
+  return (
+    <div>
+      <ErrorList errors={errors} />
+      {msg && <div className="alert alert-ok">{msg}</div>}
+      <button
+        className="secondary"
+        disabled={busy}
+        onClick={async () => {
+          setErrors([]);
+          setMsg(null);
+          const { data, error } = await supabase.rpc("carry_forward_annual_leave", { p_year: year - 1 });
+          if (error) setErrors([error.message]);
+          else if (data && data.ok === false) setErrors(data.errors ?? ["Could not carry leave forward."]);
+          else {
+            setMsg(`Unused ${year - 1} annual leave carried into ${year} for ${data?.count ?? 0} people. It can be used until 31 Dec ${year}.`);
+            router.refresh();
+          }
+        }}
+      >
+        Carry unused {year - 1} annual leave into {year}
+      </button>
+    </div>
+  );
+}
+
 export function EntitlementEditor({ rows }: { rows: Row[] }) {
   const { supabase, run, errors, busy } = useDb();
   const [draft, setDraft] = useState<Record<string, { entitled: string; carried: string }>>({});

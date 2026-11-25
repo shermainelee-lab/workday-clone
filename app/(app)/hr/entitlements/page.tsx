@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireEmployee, HR_ROLES } from "@/lib/session";
 import { yearSG, type Row } from "@/lib/format";
-import { EntitlementEditor, GenerateEntitlements } from "@/components/HrForms";
+import { CarryForward, EntitlementEditor, GenerateEntitlements } from "@/components/HrForms";
 
 export default async function EntitlementsPage({ searchParams }: { searchParams: Promise<{ year?: string }> }) {
   const sp = await searchParams;
@@ -37,6 +37,9 @@ export default async function EntitlementsPage({ searchParams }: { searchParams:
         <>
           <div className="card">
             <GenerateEntitlements year={year} />
+            <div style={{ marginTop: 12 }}>
+              <CarryForward year={year} />
+            </div>
           </div>
           <div className="card">
             <EntitlementEditor rows={rows} />

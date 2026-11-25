@@ -84,7 +84,9 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
           </dl>
         </div>
       )}
-      {historical && me.role === "hr" && <HistoricalResultForm id={id} final={r.final_rating} hasFile={!!r.signed_file_path} />}
+      {historical && (me.role === "hr" || isSelf || isSupervisor) && (
+        <HistoricalResultForm id={id} final={r.final_rating} hasFile={!!r.signed_file_path} canRate={me.role === "hr" || isSupervisor} canFile={me.role === "hr" || isSelf} />
+      )}
 
       {!historical && (
         <>

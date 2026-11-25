@@ -19,6 +19,10 @@ export default async function LeaveDetailPage({ params }: { params: Promise<{ id
     .maybeSingle();
   if (!data) notFound();
   const r = data as Row;
+  // Medical certificates are private files: open them through a short-lived signed link (the database decides who may).
+  const certUrl: string | null = r.certificate_path
+    ? ((await supabase.storage.from("medical-certificates").createSignedUrl(r.certificate_path, 300)).data?.signedUrl ?? null)
+    : null;
 
   const [{ data: events }, { data: people }] = await Promise.all([
     supabase.from("request_events").select("*").eq("entity_type", "leave").eq("entity_id", id).order("id"),
@@ -64,6 +68,20 @@ export default async function LeaveDetailPage({ params }: { params: Promise<{ id
             <dd>
               {days(r.balance_before)} before &rarr; {days(r.balance_after)} after
             </dd>
+            {r.certificate_path && (
+              <>
+                <dt>Medical certificate</dt>
+                <dd>
+                  {certUrl ? (
+                    <a href={certUrl} target="_blank" rel="noopener noreferrer">
+                      Open the attached file
+                    </a>
+                  ) : (
+                    "Attached (you do not have access to open it)"
+                  )}
+                </dd>
+              </>
+            )}
             {r.mc_number && (
               <>
                 <dt>MC number</dt>

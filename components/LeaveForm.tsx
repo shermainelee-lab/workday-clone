@@ -25,7 +25,9 @@ export default function LeaveForm({ types }: { types: Row[] }) {
   const [end, setEnd] = useState("");
   const [part, setPart] = useState<"full" | "am" | "pm">("full");
   const [reason, setReason] = useState("");
-  const [mc, setMc] = useState("");
+  const [mc, setMc] = useState(""); // storage path of the uploaded medical certificate
+  const [mcName, setMcName] = useState("");
+  const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<Preview | null>(null);
   const [submitErrors, setSubmitErrors] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
@@ -50,6 +52,27 @@ export default function LeaveForm({ types }: { types: Row[] }) {
     return () => clearTimeout(handle);
   }, [supabase, typeId, start, end, part, mc]);
 
+  async function uploadCert(file: File | undefined) {
+    if (!file) return;
+    setSubmitErrors([]);
+    if (file.size > 5 * 1024 * 1024) {
+      setSubmitErrors(["The file is larger than 5 MB. Upload a smaller photo or PDF."]);
+      return;
+    }
+    setUploading(true);
+    const { data: auth } = await supabase.auth.getUser();
+    const safe = file.name.replace(/[^A-Za-z0-9._-]+/g, "_").slice(-80);
+    const path = `${auth.user?.id}/${Date.now()}-${safe}`;
+    const { error } = await supabase.storage.from("medical-certificates").upload(path, file, { contentType: file.type || undefined });
+    setUploading(false);
+    if (error) {
+      setSubmitErrors([`Could not upload the file: ${error.message}`]);
+      return;
+    }
+    setMc(path);
+    setMcName(file.name);
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -72,7 +95,7 @@ export default function LeaveForm({ types }: { types: Row[] }) {
     router.refresh();
   }
 
-  const canSubmit = !busy && !!preview && (preview.errors ?? []).length === 0 && !!start && !!end;
+  const canSubmit = !busy && !uploading && !!preview && (preview.errors ?? []).length === 0 && !!start && !!end;
 
   return (
     <div className="grid cols-2">
@@ -125,8 +148,18 @@ export default function LeaveForm({ types }: { types: Row[] }) {
         </div>
         {type?.requires_certificate && (
           <div className="field">
-            <label htmlFor="mc">MC number</label>
-            <input id="mc" value={mc} onChange={(e) => setMc(e.target.value)} placeholder="Medical certificate no." />
+            <label htmlFor="mc">Medical certificate</label>
+            {mc ? (
+              <div>
+                {mcName}{" "}
+                <button type="button" className="secondary small" onClick={() => { setMc(""); setMcName(""); }}>
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <input id="mc" type="file" accept="application/pdf,image/*" disabled={uploading} onChange={(e) => uploadCert(e.target.files?.[0])} />
+            )}
+            <div className="muted">{uploading ? "Uploading..." : "Attach a photo or PDF (up to 5 MB). Only you, your approver and HR can see it."}</div>
           </div>
         )}
         <div className="field">

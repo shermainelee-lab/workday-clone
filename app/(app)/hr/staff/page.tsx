@@ -17,7 +17,7 @@ export default async function StaffPage() {
           <h1>Staff</h1>
           <p className="muted">
             &ldquo;Reports to&rdquo; decides who approves each person&rsquo;s leave and claims. People with no manager (such as the Director) route to the
-            Director or HR & Finance instead. Tick &ldquo;2nd approval&rdquo; for people whose leave and claims need a second approval from the Executive Director (the Director who reports to nobody) after their manager.
+            Director or HR instead. Tick &ldquo;2nd approval&rdquo; for people whose leave and claims need a second approval from the Executive Director (the Director who reports to nobody) after their manager.
           </p>
         </div>
       </div>

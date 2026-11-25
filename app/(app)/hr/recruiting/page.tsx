@@ -22,7 +22,7 @@ export default async function RecruitingPage() {
         <div>
           <h1>Recruiting</h1>
           <p className="muted">
-            Openings and candidates. Candidate details are personal data: only HR & Finance, the Director and the hiring manager of an opening can see them. Delete
+            Openings and candidates. Candidate details are personal data: only HR, the Director and the hiring manager of an opening can see them. Delete
             unsuccessful candidates when you no longer need their details.
           </p>
         </div>

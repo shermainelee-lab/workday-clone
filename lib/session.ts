@@ -4,7 +4,8 @@ import type { Row } from "@/lib/format";
 
 export const HR_ROLES = ["hr"];
 export const HR_VIEW_ROLES = ["hr", "director"];
-export const FINANCE_ROLES = ["hr"];
+// Paying claims is a per-person setting (employees.can_pay_claims) on top of the HR role.
+export const canPayClaims = (me: Row) => me.role === "hr" && !!me.can_pay_claims;
 
 const EMPLOYEE_SELECT = "*, department:departments!employees_department_id_fkey(name)";
 

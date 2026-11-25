@@ -57,7 +57,7 @@ export const STATUS_LABEL: Record<string, string> = {
 
 export const ROLE_LABEL: Record<string, string> = {
   employee: "Employee",
-  hr: "HR & Finance",
+  hr: "HR",
   director: "Director",
 };
 

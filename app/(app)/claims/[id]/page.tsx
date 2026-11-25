@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireEmployee, FINANCE_ROLES } from "@/lib/session";
+import { requireEmployee, canPayClaims } from "@/lib/session";
 import { fmtDate, fmtDateTime, money, type Row } from "@/lib/format";
 import { ApprovalSteps, Flags, StatusBadge, Timeline } from "@/components/ui";
 import { canDecideRequest } from "@/lib/approval";
@@ -29,7 +29,7 @@ export default async function ClaimDetailPage({ params }: { params: Promise<{ id
 
   const mine = c.employee_id === me.id;
   const canDecide = canDecideRequest(c, me);
-  const canPay = c.status === "submitted_to_finance" && !mine && FINANCE_ROLES.includes(me.role);
+  const canPay = c.status === "submitted_to_finance" && !mine && canPayClaims(me);
   const lines = [...((c.lines ?? []) as Row[])].sort((a, b) => a.line_no - b.line_no);
 
   return (

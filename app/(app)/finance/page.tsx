@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { requireEmployee, FINANCE_ROLES } from "@/lib/session";
+import { requireEmployee, canPayClaims } from "@/lib/session";
 import { fmtDate, money, type Row } from "@/lib/format";
 import { Flags, StatusBadge } from "@/components/ui";
 import { FinancePanel } from "@/components/ActionButtons";
 
 export default async function FinancePage() {
   const { supabase, me } = await requireEmployee();
-  if (!FINANCE_ROLES.includes(me.role)) redirect("/");
+  if (!canPayClaims(me)) redirect("/");
 
   const [queue, paid] = await Promise.all([
     supabase

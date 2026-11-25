@@ -1,5 +1,20 @@
 import { STATUS_LABEL, fmtDateTime, type Row } from "@/lib/format";
 
+// A claim line's receipt: the attached file (or the old receipt number on claims made before uploads).
+export function ReceiptLink({ line, urls }: { line: Row; urls: Record<string, string> }) {
+  if (line.receipt_path) {
+    const url = urls[line.receipt_path];
+    return url ? (
+      <a href={url} target="_blank" rel="noopener noreferrer">
+        Open receipt
+      </a>
+    ) : (
+      <span className="muted">Attached</span>
+    );
+  }
+  return <>{line.receipt_no ?? "-"}</>;
+}
+
 export function StatusBadge({ status }: { status: string }) {
   return <span className={`badge badge-${status}`}>{STATUS_LABEL[status] ?? status}</span>;
 }

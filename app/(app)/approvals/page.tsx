@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { requireEmployee } from "@/lib/session";
 import { days, fmtDateTime, fmtRange, money, type Row } from "@/lib/format";
-import { ApprovalSteps, Flags, StatusBadge } from "@/components/ui";
+import { ApprovalSteps, Flags, ReceiptLink, StatusBadge } from "@/components/ui";
+import { receiptUrls } from "@/lib/receipts";
 import { canDecideRequest } from "@/lib/approval";
 import { DecisionPanel } from "@/components/ActionButtons";
 
@@ -17,7 +18,7 @@ export default async function ApprovalsPage() {
       .order("submitted_at"),
     supabase
       .from("claims")
-      .select("*, employee:employees!claims_employee_id_fkey(full_name), first_approver:employees!claims_first_decided_by_fkey(full_name), approver:employees!claims_approver_id_fkey(full_name), lines:claim_lines(line_no, expense_date, description, receipt_no, amount, category:claim_categories(name))")
+      .select("*, employee:employees!claims_employee_id_fkey(full_name), first_approver:employees!claims_first_decided_by_fkey(full_name), approver:employees!claims_approver_id_fkey(full_name), lines:claim_lines(line_no, expense_date, description, receipt_no, receipt_path, amount, category:claim_categories(name))")
       .eq("status", "pending")
       .order("submitted_at"),
     supabase
@@ -36,6 +37,7 @@ export default async function ApprovalsPage() {
 
   const leaves = ((leaveQ.data ?? []) as Row[]).filter(decidable);
   const claims = ((claimQ.data ?? []) as Row[]).filter(decidable);
+  const urls = await receiptUrls(supabase, claims.flatMap((c) => (c.lines ?? []) as Row[]));
 
   return (
     <>
@@ -131,7 +133,9 @@ export default async function ApprovalsPage() {
                             {l.category?.name}
                             <div className="muted small">{l.description}</div>
                           </td>
-                          <td>{l.receipt_no ?? "-"}</td>
+                          <td>
+                            <ReceiptLink line={l} urls={urls} />
+                          </td>
                           <td className="right">{Number(l.amount).toFixed(2)}</td>
                         </tr>
                       ))}

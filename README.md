@@ -31,7 +31,7 @@ Built around the SRA Performance Appraisal Form (Mid-Year in May, Year-End in No
 ## Business rules (enforced in Postgres, not in the browser)
 
 Blocking errors, shown with a clear message and nothing saved:
-overlapping leave, working days = 0 (weekend or public-holiday-only), request across two calendar years, over balance (annual, wellness, compassionate), unpaid leave while annual leave remains, missing medical certificate file for sick and hospitalisation leave, missing receipt number, duplicate receipt, future-dated expense, no declaration, reject without a remark, pay without a payment reference.
+overlapping leave, working days = 0 (weekend or public-holiday-only), request across two calendar years, over balance (annual, wellness, compassionate), unpaid leave while annual leave remains, missing medical certificate file for sick and hospitalisation leave, missing receipt file, future-dated expense, no declaration, reject without a remark, pay without a payment reference.
 
 Flags shown to the approver (do not block): short notice, retrospective request, team clash, over the sick-leave entitlement or the combined 60-day cap, claim line over the category limit, expense older than 90 days.
 
@@ -89,7 +89,7 @@ To use your own people instead of the demo company, add them on the Staff page a
 ## Known limitations
 
 - Notifications are **in-app only** (bell and Notifications page). Email, Outlook or Teams delivery needs an email provider wired to the `notifications` table, for example a Supabase Edge Function or Database Webhook.
-- Claims record **receipt numbers**, not receipt images. Add Supabase Storage if you need uploads.
+- Claims carry the **receipt as an uploaded file** on each line (private storage; only the claimant, approvers, HR and the Director can open it). The app does not detect the same receipt being claimed twice, so approvers have to check.
 - Public-holiday and entitlement defaults are Singapore-specific.
 - The Supabase client is untyped and `noImplicitAny` is off in `tsconfig.json`. Generate types (`supabase gen types typescript`) and re-enable it when you want stricter checking.
 

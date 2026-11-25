@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireEmployee, canPayClaims } from "@/lib/session";
+import { receiptUrls } from "@/lib/receipts";
 import { fmtDate, money, type Row } from "@/lib/format";
-import { Flags, StatusBadge } from "@/components/ui";
+import { Flags, ReceiptLink, StatusBadge } from "@/components/ui";
 import { FinancePanel } from "@/components/ActionButtons";
 
 export default async function FinancePage() {
@@ -12,7 +13,7 @@ export default async function FinancePage() {
   const [queue, paid] = await Promise.all([
     supabase
       .from("claims")
-      .select("*, employee:employees!claims_employee_id_fkey(full_name), lines:claim_lines(line_no, receipt_no, amount, description, category:claim_categories(name))")
+      .select("*, employee:employees!claims_employee_id_fkey(full_name), lines:claim_lines(line_no, receipt_no, receipt_path, amount, description, category:claim_categories(name))")
       .eq("status", "submitted_to_finance")
       .order("decided_at"),
     supabase
@@ -23,6 +24,7 @@ export default async function FinancePage() {
       .limit(15),
   ]);
   const rows = (queue.data ?? []) as Row[];
+  const urls = await receiptUrls(supabase, rows.flatMap((c) => (c.lines ?? []) as Row[]));
   const total = rows.reduce((s, c) => s + Number(c.total_amount), 0);
 
   return (
@@ -67,7 +69,9 @@ export default async function FinancePage() {
                           {l.category?.name}
                           <div className="muted small">{l.description}</div>
                         </td>
-                        <td>{l.receipt_no ?? "no receipt"}</td>
+                        <td>
+                          <ReceiptLink line={l} urls={urls} />
+                        </td>
                         <td className="right">{Number(l.amount).toFixed(2)}</td>
                       </tr>
                     ))}

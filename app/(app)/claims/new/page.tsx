@@ -10,7 +10,7 @@ export default async function NewClaimPage() {
       <div className="page-head">
         <div>
           <h1>New expense claim</h1>
-          <p className="muted">Add one line per receipt. Receipts that are missing or already claimed are blocked with a clear message.</p>
+          <p className="muted">Add one line per receipt. Attach the receipt (a photo or PDF) to each line. A line with no receipt is blocked with a clear message.</p>
         </div>
       </div>
       <ClaimForm categories={categories ?? []} today={todaySG()} />

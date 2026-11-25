@@ -34,8 +34,36 @@ export function ErrorList({ errors }: { errors: string[] }) {
   );
 }
 
+// Shows where a request that needs two approvals has got to.
+export function ApprovalSteps({ r }: { r: Row }) {
+  if (!r.requires_second) return null;
+  const done = ["approved", "submitted_to_finance", "paid", "returned"].includes(r.status);
+  const first = r.first_decided_at
+    ? `Step 1 (manager): approved by ${r.first_approver?.full_name ?? "the manager"} on ${fmtDateTime(r.first_decided_at)}`
+    : r.status === "pending"
+      ? `Step 1 (manager): waiting for ${r.approver?.full_name ?? "the manager"}`
+      : "Step 1 (manager): not approved";
+  const second = r.first_decided_at
+    ? r.status === "pending"
+      ? `Step 2 (Executive Director): waiting for ${r.approver?.full_name ?? "the Executive Director"}`
+      : done
+        ? "Step 2 (Executive Director): approved"
+        : "Step 2 (Executive Director): not approved"
+    : "Step 2 (Executive Director): after step 1";
+  return (
+    <div className="alert alert-info" style={{ marginTop: 8 }}>
+      <strong>Needs two approvals</strong>
+      <ul>
+        <li>{first}</li>
+        <li>{second}</li>
+      </ul>
+    </div>
+  );
+}
+
 const ACTION_LABEL: Record<string, string> = {
   submitted: "Submitted",
+  first_approved: "First approval given (now with the second approver)",
   approved: "Approved",
   rejected: "Rejected",
   cancelled: "Cancelled",

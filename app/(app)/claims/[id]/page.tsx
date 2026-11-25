@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireEmployee, FINANCE_ROLES } from "@/lib/session";
 import { fmtDate, fmtDateTime, money, type Row } from "@/lib/format";
-import { Flags, StatusBadge, Timeline } from "@/components/ui";
+import { ApprovalSteps, Flags, StatusBadge, Timeline } from "@/components/ui";
+import { canDecideRequest } from "@/lib/approval";
 import { CancelButton, DecisionPanel, FinancePanel } from "@/components/ActionButtons";
 
 export default async function ClaimDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -12,7 +13,7 @@ export default async function ClaimDetailPage({ params }: { params: Promise<{ id
   const { data } = await supabase
     .from("claims")
     .select(
-      "*, employee:employees!claims_employee_id_fkey(full_name), approver:employees!claims_approver_id_fkey(full_name), lines:claim_lines(*, category:claim_categories(name))",
+      "*, employee:employees!claims_employee_id_fkey(full_name), approver:employees!claims_approver_id_fkey(full_name), first_approver:employees!claims_first_decided_by_fkey(full_name), lines:claim_lines(*, category:claim_categories(name))",
     )
     .eq("id", id)
     .maybeSingle();
@@ -27,7 +28,7 @@ export default async function ClaimDetailPage({ params }: { params: Promise<{ id
   (people ?? []).forEach((p) => (names[p.id] = p.full_name));
 
   const mine = c.employee_id === me.id;
-  const canDecide = c.status === "pending" && !mine && (c.approver_id === me.id || c.escalated_to === me.id || ["director", "admin"].includes(me.role));
+  const canDecide = canDecideRequest(c, me);
   const canPay = c.status === "submitted_to_finance" && !mine && FINANCE_ROLES.includes(me.role);
   const lines = [...((c.lines ?? []) as Row[])].sort((a, b) => a.line_no - b.line_no);
 
@@ -83,6 +84,7 @@ export default async function ClaimDetailPage({ params }: { params: Promise<{ id
               )}
             </dl>
             <Flags flags={c.flags} />
+            <ApprovalSteps r={c} />
             {mine && c.status === "pending" && <CancelButton kind="claim" id={c.id} label="Cancel claim" />}
           </div>
           <div className="card table-wrap">

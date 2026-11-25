@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireEmployee } from "@/lib/session";
 import { days, fmtDateTime, fmtRange, todaySG, type Row } from "@/lib/format";
-import { Flags, StatusBadge, Timeline } from "@/components/ui";
+import { ApprovalSteps, Flags, StatusBadge, Timeline } from "@/components/ui";
+import { canDecideRequest } from "@/lib/approval";
 import { CancelButton, DecisionPanel } from "@/components/ActionButtons";
 
 export default async function LeaveDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -12,7 +13,7 @@ export default async function LeaveDetailPage({ params }: { params: Promise<{ id
   const { data } = await supabase
     .from("leave_requests")
     .select(
-      "*, leave_type:leave_types(name, code), employee:employees!leave_requests_employee_id_fkey(full_name, job_title), approver:employees!leave_requests_approver_id_fkey(full_name), decider:employees!leave_requests_decided_by_fkey(full_name)",
+      "*, leave_type:leave_types(name, code), employee:employees!leave_requests_employee_id_fkey(full_name, job_title), approver:employees!leave_requests_approver_id_fkey(full_name), first_approver:employees!leave_requests_first_decided_by_fkey(full_name), decider:employees!leave_requests_decided_by_fkey(full_name)",
     )
     .eq("id", id)
     .maybeSingle();
@@ -27,7 +28,7 @@ export default async function LeaveDetailPage({ params }: { params: Promise<{ id
   (people ?? []).forEach((p) => (names[p.id] = p.full_name));
 
   const mine = r.employee_id === me.id;
-  const canDecide = r.status === "pending" && !mine && (r.approver_id === me.id || r.escalated_to === me.id || ["director", "admin"].includes(me.role));
+  const canDecide = canDecideRequest(r, me);
   const canCancel = (mine || ["hr", "admin"].includes(me.role)) && (r.status === "pending" || (r.status === "approved" && r.end_date >= todaySG()));
   const clashes = (r.clashes ?? []) as { name: string; start: string; end: string; status: string; ref: string }[];
 
@@ -103,6 +104,7 @@ export default async function LeaveDetailPage({ params }: { params: Promise<{ id
               </ul>
             </div>
           )}
+          <ApprovalSteps r={r} />
           {r.escalated_at && <div className="alert alert-warn">Escalated on {fmtDateTime(r.escalated_at)} after no response.</div>}
           {canCancel && <CancelButton kind="leave" id={r.id} />}
         </div>

@@ -1,23 +1,23 @@
 import Link from "next/link";
 import { requireEmployee } from "@/lib/session";
 import { days, fmtDateTime, fmtRange, money, type Row } from "@/lib/format";
-import { Flags, StatusBadge } from "@/components/ui";
+import { ApprovalSteps, Flags, StatusBadge } from "@/components/ui";
+import { canDecideRequest } from "@/lib/approval";
 import { DecisionPanel } from "@/components/ActionButtons";
 
 export default async function ApprovalsPage() {
   const { supabase, me } = await requireEmployee();
-  const canOverride = ["director", "admin"].includes(me.role);
-  const decidable = (r: Row) => r.employee_id !== me.id && (r.approver_id === me.id || r.escalated_to === me.id || canOverride);
+  const decidable = (r: Row) => canDecideRequest(r, me);
 
   const [leaveQ, claimQ, doneLeave, doneClaims] = await Promise.all([
     supabase
       .from("leave_requests")
-      .select("*, leave_type:leave_types(name), employee:employees!leave_requests_employee_id_fkey(full_name)")
+      .select("*, leave_type:leave_types(name), employee:employees!leave_requests_employee_id_fkey(full_name), first_approver:employees!leave_requests_first_decided_by_fkey(full_name), approver:employees!leave_requests_approver_id_fkey(full_name)")
       .eq("status", "pending")
       .order("submitted_at"),
     supabase
       .from("claims")
-      .select("*, employee:employees!claims_employee_id_fkey(full_name), lines:claim_lines(line_no, expense_date, description, receipt_no, amount, category:claim_categories(name))")
+      .select("*, employee:employees!claims_employee_id_fkey(full_name), first_approver:employees!claims_first_decided_by_fkey(full_name), approver:employees!claims_approver_id_fkey(full_name), lines:claim_lines(line_no, expense_date, description, receipt_no, amount, category:claim_categories(name))")
       .eq("status", "pending")
       .order("submitted_at"),
     supabase
@@ -74,6 +74,7 @@ export default async function ApprovalsPage() {
                   <dd>{fmtDateTime(r.submitted_at)}</dd>
                 </dl>
                 <Flags flags={r.flags} />
+                <ApprovalSteps r={r} />
                 {r.escalated_at && <div className="alert alert-warn">Escalated to you: not answered within 2 working days.</div>}
                 {clashes.length > 0 && (
                   <div className="alert alert-info">
@@ -107,6 +108,7 @@ export default async function ApprovalsPage() {
                 {c.description} &middot; <strong>{money(c.total_amount, c.currency)}</strong>
               </p>
               <Flags flags={c.flags} />
+              <ApprovalSteps r={c} />
               <div className="table-wrap">
                 <table>
                   <thead>

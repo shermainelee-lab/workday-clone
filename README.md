@@ -27,7 +27,7 @@ On HR > Staff, tick **2nd approval** for anyone whose leave and claims need two 
 ## Business rules (enforced in Postgres, not in the browser)
 
 Blocking errors, shown with a clear message and nothing saved:
-overlapping leave, working days = 0 (weekend or public-holiday-only), request across two calendar years, over balance (annual, wellness, compassionate), unpaid leave while annual leave remains, missing MC number for sick leave, missing receipt number, duplicate receipt, future-dated expense, no declaration, reject without a remark, pay without a payment reference.
+overlapping leave, working days = 0 (weekend or public-holiday-only), request across two calendar years, over balance (annual, wellness, compassionate), unpaid leave while annual leave remains, missing medical certificate file for sick and hospitalisation leave, missing receipt number, duplicate receipt, future-dated expense, no declaration, reject without a remark, pay without a payment reference.
 
 Flags shown to the approver (do not block): short notice, retrospective request, team clash, over the sick-leave entitlement or the combined 60-day cap, claim line over the category limit, expense older than 90 days.
 

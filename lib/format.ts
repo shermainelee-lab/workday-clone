@@ -57,11 +57,8 @@ export const STATUS_LABEL: Record<string, string> = {
 
 export const ROLE_LABEL: Record<string, string> = {
   employee: "Employee",
-  office_manager: "Office Manager",
-  hr: "HR",
-  finance: "Finance",
+  hr: "HR & Finance",
   director: "Director",
-  admin: "Admin",
 };
 
 export function csvEscape(v: unknown): string {

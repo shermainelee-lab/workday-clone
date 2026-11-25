@@ -73,7 +73,9 @@ export function toCsv(rows: Row[], columns: { key: string; label: string }[]): s
 }
 
 export const REVIEW_STATUS: Record<string, string> = {
-  pending_self: "Awaiting self review",
-  pending_manager: "Awaiting manager",
+  pending_self: "Awaiting self-appraisal",
+  pending_supervisor: "With supervisor",
+  pending_ed: "With Executive Director",
+  pending_discussion: "Discussion and sign-off",
   completed: "Complete",
 };

@@ -24,6 +24,10 @@ Nobody can approve or pay their own request, enforced in the database.
 
 On HR > Staff, tick **2nd approval** for anyone whose leave and claims need two approvals. Their manager approves first; the request then goes to the **Executive Director** (the active Director who reports to nobody) for the second approval. Leave is only booked, and a claim only goes to Finance, after the second approval. Either approver can reject (a remark is required). The same person can never give both approvals, and only the Executive Director can give the second one. Reminders and escalation restart when a request reaches the second approver. The setting is stamped on each request when it is submitted, so changing it later does not affect requests already in flight.
 
+### Performance appraisal
+
+Built around the SRA Performance Appraisal Form (Mid-Year in May, Year-End in November), 3-point scale (3 Exceeds, 2 Meets, 1 Needs Improvement). HR launches a cycle at **HR > Performance**. Flow: employee self-appraisal (objectives and KPIs, five core competencies, development needs, aspirations) -> supervisor assessment (competency ratings, overall rating and reasons) -> Executive Director's overall rating (skipped when the supervisor or the employee is the Executive Director) -> supervisor records the discussion and next-period objectives -> the employee, supervisor and Executive Director each sign off. The supervisor and ED assessments are hidden from the employee until the discussion stage (enforced by row-level security). Past paper appraisals are added as a closed cycle with the signed form attached and the final rating.
+
 ## Business rules (enforced in Postgres, not in the browser)
 
 Blocking errors, shown with a clear message and nothing saved:

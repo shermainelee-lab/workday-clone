@@ -2,7 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireEmployee, HR_ROLES } from "@/lib/session";
 import { REVIEW_STATUS, type Row } from "@/lib/format";
-import { CycleManager, RATING_LABEL } from "@/components/Performance";
+import { CycleManager } from "@/components/Performance";
+import { RATING_LABEL } from "@/lib/appraisal";
 
 export default async function HrPerformancePage() {
   const { supabase, me } = await requireEmployee();
@@ -13,7 +14,7 @@ export default async function HrPerformancePage() {
     supabase
       .from("reviews")
       .select(
-        "id, status, cycle_id, self_rating, manager_rating, employee:employees!reviews_employee_id_fkey(full_name), reviewer:employees!reviews_reviewer_id_fkey(full_name), cycle:review_cycles(name)",
+        "id, status, cycle_id, final_rating, signed_file_path, employee:employees!reviews_employee_id_fkey(full_name), reviewer:employees!reviews_reviewer_id_fkey(full_name), cycle:review_cycles(name, is_historical)",
       )
       .order("created_at", { ascending: false }),
   ]);
@@ -25,8 +26,8 @@ export default async function HrPerformancePage() {
       ...c,
       total: mine.length,
       completed: mine.filter((r) => r.status === "completed").length,
-      pending_manager: mine.filter((r) => r.status === "pending_manager").length,
       pending_self: mine.filter((r) => r.status === "pending_self").length,
+      in_progress: mine.filter((r) => !["pending_self", "completed"].includes(r.status)).length,
     };
   });
   const latest = withCounts.find((c) => c.status === "open") ?? withCounts[0];
@@ -36,8 +37,10 @@ export default async function HrPerformancePage() {
     <>
       <div className="page-head">
         <div>
-          <h1>Performance cycles</h1>
-          <p className="muted">Launching a cycle creates one review per active staff member, with their manager as reviewer.</p>
+          <h1>Performance appraisals</h1>
+          <p className="muted">
+            Launching a cycle creates one appraisal per active staff member, with their manager as supervisor and the Executive Director as the second assessor. Past paper appraisals can be added as a closed cycle.
+          </p>
         </div>
       </div>
       <CycleManager cycles={withCounts} />
@@ -48,10 +51,9 @@ export default async function HrPerformancePage() {
             <thead>
               <tr>
                 <th>Person</th>
-                <th>Reviewer</th>
-                <th>Self</th>
-                <th>Manager</th>
-                <th>Status</th>
+                <th>Supervisor</th>
+                <th>Final rating</th>
+                <th>{latest.is_historical ? "Signed form" : "Status"}</th>
               </tr>
             </thead>
             <tbody>
@@ -61,9 +63,8 @@ export default async function HrPerformancePage() {
                     <Link href={`/performance/${r.id}`}>{r.employee?.full_name}</Link>
                   </td>
                   <td>{r.reviewer?.full_name ?? "-"}</td>
-                  <td>{r.self_rating ? RATING_LABEL[r.self_rating].split(" - ")[0] : "-"}</td>
-                  <td>{r.manager_rating ? RATING_LABEL[r.manager_rating].split(" - ")[0] : "-"}</td>
-                  <td>{REVIEW_STATUS[r.status]}</td>
+                  <td>{r.final_rating ? RATING_LABEL[r.final_rating] : "-"}</td>
+                  <td>{latest.is_historical ? (r.signed_file_path ? "Attached" : "Not yet") : REVIEW_STATUS[r.status]}</td>
                 </tr>
               ))}
             </tbody>

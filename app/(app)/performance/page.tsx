@@ -5,36 +5,38 @@ import { GoalManager } from "@/components/Performance";
 
 export default async function PerformancePage() {
   const { supabase, me } = await requireEmployee();
-  const select = "id, status, cycle:review_cycles(name, status, self_due, manager_due), employee:employees!reviews_employee_id_fkey(full_name)";
+  const select = "id, status, ed_id, cycle:review_cycles(name, status, self_due, manager_due), employee:employees!reviews_employee_id_fkey(full_name)";
 
   const [{ data: mine }, { data: team }, { data: goals }] = await Promise.all([
     supabase.from("reviews").select(select).eq("employee_id", me.id).order("created_at", { ascending: false }),
-    supabase.from("reviews").select(select).eq("reviewer_id", me.id).neq("employee_id", me.id).order("created_at", { ascending: false }),
+    supabase.from("reviews").select(select).or(`reviewer_id.eq.${me.id},ed_id.eq.${me.id}`).neq("employee_id", me.id).order("created_at", { ascending: false }),
     supabase.from("goals").select("*").eq("employee_id", me.id).order("created_at", { ascending: false }),
   ]);
 
-  const toWrite = ((team ?? []) as Row[]).filter((r) => r.status === "pending_manager" && r.cycle?.status === "open");
+  const toWrite = ((team ?? []) as Row[]).filter(
+    (r) => r.cycle?.status === "open" && (r.status === "pending_supervisor" || r.status === "pending_discussion" || (r.status === "pending_ed" && r.ed_id === me.id)),
+  );
 
   return (
     <>
       <div className="page-head">
         <div>
           <h1>Performance</h1>
-          <p className="muted">Your reviews and goals.</p>
+          <p className="muted">Your appraisals and goals.</p>
         </div>
       </div>
 
       {toWrite.length > 0 && (
         <div className="alert alert-info">
-          {toWrite.length} {toWrite.length === 1 ? "person is" : "people are"} waiting for your assessment.
+          {toWrite.length} {toWrite.length === 1 ? "person is" : "people are"} waiting for something from you.
         </div>
       )}
 
       <div className="grid cols-2">
         <div className="card">
-          <h2>My reviews</h2>
+          <h2>My appraisals</h2>
           {(mine ?? []).length === 0 ? (
-            <p className="empty">No reviews yet.</p>
+            <p className="empty">No appraisals yet.</p>
           ) : (
             <table>
               <tbody>
@@ -52,9 +54,9 @@ export default async function PerformancePage() {
           )}
         </div>
         <div className="card">
-          <h2>Reviews I write</h2>
+          <h2>Appraisals I handle</h2>
           {(team ?? []).length === 0 ? (
-            <p className="empty">You are not a reviewer in any cycle.</p>
+            <p className="empty">You are not a supervisor in any cycle.</p>
           ) : (
             <table>
               <tbody>

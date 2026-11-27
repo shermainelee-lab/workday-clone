@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { ErrorList, Flags } from "@/components/ui";
-import { days, fmtRange, type Row } from "@/lib/format";
+import { days, fmtDate, fmtRange, type Row } from "@/lib/format";
 
 type Preview = {
   errors: string[];
@@ -17,13 +17,16 @@ type Preview = {
   leave_type?: string;
 };
 
-export default function LeaveForm({ types }: { types: Row[] }) {
+const CHILD_TYPES = ["MAT", "PAT", "SPL"];
+
+export default function LeaveForm({ types, children }: { types: Row[]; children: Row[] }) {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const [typeId, setTypeId] = useState(types[0]?.id ?? "");
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const [part, setPart] = useState<"full" | "am" | "pm">("full");
+  const [childId, setChildId] = useState("");
   const [reason, setReason] = useState("");
   const [mc, setMc] = useState(""); // storage path of the uploaded medical certificate
   const [mcName, setMcName] = useState("");
@@ -33,6 +36,8 @@ export default function LeaveForm({ types }: { types: Row[] }) {
   const [busy, setBusy] = useState(false);
 
   const type = types.find((t) => t.id === typeId);
+  const needsChild = CHILD_TYPES.includes(type?.code);
+  const childParam = needsChild ? childId || null : null;
 
   useEffect(() => {
     if (!typeId || !start || !end) {
@@ -46,11 +51,12 @@ export default function LeaveForm({ types }: { types: Row[] }) {
         p_end: end,
         p_part: part,
         p_mc: mc || null,
+        p_child: childParam,
       });
       setPreview(error ? { errors: [error.message] } : (data as Preview));
     }, 300);
     return () => clearTimeout(handle);
-  }, [supabase, typeId, start, end, part, mc]);
+  }, [supabase, typeId, start, end, part, mc, childParam]);
 
   async function uploadCert(file: File | undefined) {
     if (!file) return;
@@ -84,6 +90,7 @@ export default function LeaveForm({ types }: { types: Row[] }) {
       p_part: part,
       p_reason: reason || null,
       p_mc: mc || null,
+      p_child: childParam,
     });
     setBusy(false);
     const res = (data ?? {}) as { ok?: boolean; id?: string; errors?: string[] };
@@ -111,6 +118,20 @@ export default function LeaveForm({ types }: { types: Row[] }) {
             ))}
           </select>
         </div>
+        {needsChild && (
+          <div className="field">
+            <label htmlFor="child">Child</label>
+            <select id="child" value={childId} onChange={(e) => setChildId(e.target.value)}>
+              <option value="">Select a child</option>
+              {children.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.child_name} (born {fmtDate(c.date_of_birth)})
+                </option>
+              ))}
+            </select>
+            {children.length === 0 && <div className="muted">Add your child under Family details on your profile first.</div>}
+          </div>
+        )}
         <div className="row">
           <div className="field">
             <label htmlFor="start">From</label>

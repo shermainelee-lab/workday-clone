@@ -11,6 +11,9 @@ export default async function HrLayout({ children }: { children: React.ReactNode
         <Link className="btn secondary small" href="/hr">
           Master Leave Record
         </Link>
+        <Link className="btn secondary small" href="/hr/record-leave">
+          Record leave
+        </Link>
         <Link className="btn secondary small" href="/hr/entitlements">
           Entitlements
         </Link>

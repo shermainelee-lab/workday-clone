@@ -119,3 +119,7 @@ Company policy, not statutory: 5 working days, paid, once per employee for their
 ## Changing a start date
 
 HR > Staff: click the date in the Joined column, pick the new date and click away to save. Leave entitlements already created are not recalculated; adjust them on HR > Entitlements if the change affects them.
+
+## Recording leave that was already approved
+
+HR > Record leave: pick the person, leave type and dates, optionally who approved it and a note. It is saved as approved (flag "Recorded by HR"), takes the days off the balance, shows on the calendar and reports, and is written to the audit trail. There is no approver step and no balance block (going over the balance shows a warning). Leave that crosses a year end is entered as two entries. HR cannot record their own leave; another HR person has to. Use it for 2026 leave (so carry-forward is right) and for 2027 leave already approved on paper.

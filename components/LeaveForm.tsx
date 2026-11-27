@@ -169,7 +169,7 @@ export default function LeaveForm({ types, children }: { types: Row[]; children:
         </div>
         {type?.requires_certificate && (
           <div className="field">
-            <label htmlFor="mc">Medical certificate</label>
+            <label htmlFor="mc">{type?.code === "MRL" ? "Marriage certificate" : "Medical certificate"}</label>
             {mc ? (
               <div>
                 {mcName}{" "}

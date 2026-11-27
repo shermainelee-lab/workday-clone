@@ -70,7 +70,7 @@ export default async function LeaveDetailPage({ params }: { params: Promise<{ id
             </dd>
             {r.certificate_path && (
               <>
-                <dt>Medical certificate</dt>
+                <dt>{r.leave_type?.code === "MRL" ? "Marriage certificate" : "Medical certificate"}</dt>
                 <dd>
                   {certUrl ? (
                     <a href={certUrl} target="_blank" rel="noopener noreferrer">

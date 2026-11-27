@@ -111,3 +111,7 @@ Maternity (80 days for a Singapore citizen child, else 60), paternity (20 days f
 Eligibility is checked when someone applies, from **Family details** on the employee's profile (gender and each child's date of birth, citizenship and whether the parents are married). Employees and HR can edit it; nobody else can see it. Checks: 3 months of service (before the birth for maternity, paternity and shared parental; at the start date for childcare), gender, citizenship, marriage for paternity, age of the youngest child, and days already used for that child (or that year for childcare). Maternity, paternity and shared parental requests may span two calendar years.
 
 Not covered or not verified: adoption leave, unpaid infant care leave, paternity for births before April 2025 (treated as 10 days), and special cases (miscarriage, stillbirth, employees with under 3 months of service who may qualify for reduced pay). Confirm unusual cases with MOM.
+
+## Marriage leave
+
+Company policy, not statutory: 5 working days, paid, once per employee for their whole time at the company (earlier requests count across all years), and a marriage certificate must be uploaded with the request. The approver and HR can open the certificate on the request. The system does not check the marriage date against the leave dates, so the approver should compare the certificate with the dates asked for.

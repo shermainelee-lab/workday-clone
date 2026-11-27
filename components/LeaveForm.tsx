@@ -17,9 +17,15 @@ type Preview = {
   leave_type?: string;
 };
 
+function addMonths(d: string, n: number) {
+  const x = new Date(d + "T00:00:00Z");
+  x.setUTCMonth(x.getUTCMonth() + n);
+  return x.toISOString().slice(0, 10);
+}
+
 const CHILD_TYPES = ["MAT", "PAT", "SPL"];
 
-export default function LeaveForm({ types, children }: { types: Row[]; children: Row[] }) {
+export default function LeaveForm({ types, children, marriageDate }: { types: Row[]; children: Row[]; marriageDate: string | null }) {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const [typeId, setTypeId] = useState(types[0]?.id ?? "");
@@ -130,6 +136,11 @@ export default function LeaveForm({ types, children }: { types: Row[]; children:
               ))}
             </select>
             {children.length === 0 && <div className="muted">Add your child under Family details on your profile first.</div>}
+          </div>
+        )}
+        {type?.code === "MRL" && marriageDate && (
+          <div className="alert alert-info">
+            Marriage leave can be taken from your marriage date ({fmtDate(marriageDate)}) up to 6 months after it, by {fmtDate(addMonths(marriageDate, 6))}. Give at least 14 days&apos; notice.
           </div>
         )}
         <div className="row">

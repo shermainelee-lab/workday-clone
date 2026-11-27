@@ -15,7 +15,7 @@ export default async function NewLeavePage() {
           <p className="muted">Your balance and team clashes are checked as you pick dates. Nothing is saved until you submit.</p>
         </div>
       </div>
-      <LeaveForm types={offered} children={children ?? []} />
+      <LeaveForm marriageDate={priv?.marriage_date ?? null} types={offered} children={children ?? []} />
     </>
   );
 }

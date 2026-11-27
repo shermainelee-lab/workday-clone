@@ -318,7 +318,17 @@ export function StaffManager({ employees, departments }: { employees: Row[]; dep
                     onChange={(ev) => patch(e.id, { can_pay_claims: ev.target.checked })}
                   />
                 </td>
-                <td className="nowrap">{fmtDate(e.join_date)}</td>
+                <td>
+                  <input
+                    type="date"
+                    aria-label="Employment start date"
+                    defaultValue={e.join_date ?? ""}
+                    disabled={busy}
+                    onBlur={(ev) => {
+                      if (ev.target.value && ev.target.value !== e.join_date) patch(e.id, { join_date: ev.target.value });
+                    }}
+                  />
+                </td>
                 <td>{e.auth_user_id ? <span className="badge badge-approved">Linked</span> : <span className="badge">Not yet</span>}</td>
                 <td>
                   <input type="checkbox" checked={e.is_active} disabled={busy} onChange={(ev) => patch(e.id, { is_active: ev.target.checked })} />

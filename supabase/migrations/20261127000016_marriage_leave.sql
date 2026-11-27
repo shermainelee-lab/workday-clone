@@ -5,3 +5,5 @@ values ('MRL', 'Marriage Leave', true, 0, false, 'block', true, 0, true, 7) on c
 -- _evaluate_leave: the missing-certificate error says "marriage certificate" for MRL.
 -- _statutory_entitlement: MRL returns 5 days; used days are counted across all years (case when t.code = 'MRL' then true ...).
 -- decide_leave_request: skips the stored-balance check for MRL like the other statutory types.
+-- Only for employees getting married: employee_private.marriage_date must be set (Family details), otherwise _statutory_entitlement returns an error for MRL.
+alter table public.employee_private add column marriage_date date;

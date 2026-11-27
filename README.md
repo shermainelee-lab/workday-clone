@@ -114,4 +114,4 @@ Not covered or not verified: adoption leave, unpaid infant care leave, paternity
 
 ## Marriage leave
 
-Company policy, not statutory: 5 working days, paid, once per employee for their whole time at the company (earlier requests count across all years), and a marriage certificate must be uploaded with the request. The approver and HR can open the certificate on the request. The system does not check the marriage date against the leave dates, so the approver should compare the certificate with the dates asked for.
+Company policy, not statutory: 5 working days, paid, once per employee for their whole time at the company, and only for employees who have a marriage date under Family details (earlier requests count across all years), and a marriage certificate must be uploaded with the request. The approver and HR can open the certificate on the request. The leave only appears for employees with a marriage date. The system does not check that date against the leave dates, so the approver should compare the certificate with the dates asked for.

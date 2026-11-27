@@ -6,7 +6,7 @@ import { fmtDate, type Row } from "@/lib/format";
 import { useDb } from "@/components/HrForms";
 
 // Gender and children, used to check eligibility for maternity, paternity, shared parental and childcare leave.
-export function FamilyDetails({ employeeId, gender, children }: { employeeId: string; gender: string | null; children: Row[] }) {
+export function FamilyDetails({ employeeId, gender, marriageDate, children }: { employeeId: string; gender: string | null; marriageDate: string | null; children: Row[] }) {
   const { supabase, run, errors, busy } = useDb();
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
@@ -24,9 +24,7 @@ export function FamilyDetails({ employeeId, gender, children }: { employeeId: st
           disabled={busy}
           onChange={(e) =>
             run(() =>
-              e.target.value
-                ? supabase.from("employee_private").upsert({ employee_id: employeeId, gender: e.target.value })
-                : supabase.from("employee_private").delete().eq("employee_id", employeeId)
+              supabase.from("employee_private").upsert({ employee_id: employeeId, gender: e.target.value || null })
             )
           }
         >
@@ -34,6 +32,20 @@ export function FamilyDetails({ employeeId, gender, children }: { employeeId: st
           <option value="female">Female</option>
           <option value="male">Male</option>
         </select>
+      </div>
+
+      <div className="field">
+        <label htmlFor="mdate">Date of marriage (only if getting married, for marriage leave)</label>
+        <input
+          id="mdate"
+          type="date"
+          defaultValue={marriageDate ?? ""}
+          disabled={busy}
+          onBlur={(e) => {
+            if ((e.target.value || null) !== marriageDate) run(() => supabase.from("employee_private").upsert({ employee_id: employeeId, marriage_date: e.target.value || null }));
+          }}
+        />
+        <div className="muted">Enter the wedding date, or the planned date. Leave blank if not applicable.</div>
       </div>
 
       {children.length === 0 ? (

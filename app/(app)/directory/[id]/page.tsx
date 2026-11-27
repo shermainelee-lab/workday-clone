@@ -29,7 +29,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
     supabase.from("checklists").select("id, kind, status, anchor_date").eq("employee_id", id).order("created_at", { ascending: false }),
     supabase.from("goals").select("*").eq("employee_id", id).order("created_at", { ascending: false }),
     supabase.from("reviews").select("id, status, cycle:review_cycles(name)").eq("employee_id", id).order("created_at", { ascending: false }),
-    supabase.from("employee_private").select("gender").eq("employee_id", id).maybeSingle(),
+    supabase.from("employee_private").select("gender, marriage_date").eq("employee_id", id).maybeSingle(),
     supabase.from("employee_children").select("*").eq("employee_id", id).order("date_of_birth"),
   ]);
 
@@ -107,7 +107,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
         <div className="card">
           <h2>Family details</h2>
           <p className="muted">Used to check eligibility for maternity, paternity, shared parental and childcare leave. Only the employee and HR can see this.</p>
-          <FamilyDetails employeeId={id} gender={(priv as Row | null)?.gender ?? null} children={(kids ?? []) as Row[]} />
+          <FamilyDetails employeeId={id} gender={(priv as Row | null)?.gender ?? null} marriageDate={(priv as Row | null)?.marriage_date ?? null} children={(kids ?? []) as Row[]} />
         </div>
       )}
 

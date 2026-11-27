@@ -13,11 +13,15 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
 
   const { data } = await supabase
     .from("employees")
-    .select("*, department:departments!employees_department_id_fkey(name), manager:employees!employees_manager_id_fkey(id, full_name)")
+    .select("*, department:departments!employees_department_id_fkey(name)")
     .eq("id", id)
     .maybeSingle();
   if (!data) notFound();
   const p = data as Row;
+  if (p.manager_id) {
+    const { data: mgr } = await supabase.from("employees").select("id, full_name").eq("id", p.manager_id).maybeSingle();
+    p.manager = mgr;
+  }
 
   const [{ data: reports }, { data: balances }, { data: lists }, { data: goals }, { data: reviews }, { data: priv }, { data: kids }] = await Promise.all([
     supabase.from("employees").select("id, full_name, job_title").eq("manager_id", id).eq("is_active", true).order("full_name"),

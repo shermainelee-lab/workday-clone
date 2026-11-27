@@ -4,6 +4,7 @@ import { requireEmployee, HR_ROLES } from "@/lib/session";
 import { days, fmtDate, REVIEW_STATUS, ROLE_LABEL, yearSG, type Row } from "@/lib/format";
 import { KIND_LABEL } from "@/lib/checklist";
 import { GoalManager } from "@/components/Performance";
+import { FamilyDetails } from "@/components/FamilyDetails";
 
 // Each section is filtered by the database's row-level security, so it only shows what the viewer is allowed to see.
 export default async function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
@@ -18,12 +19,14 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
   if (!data) notFound();
   const p = data as Row;
 
-  const [{ data: reports }, { data: balances }, { data: lists }, { data: goals }, { data: reviews }] = await Promise.all([
+  const [{ data: reports }, { data: balances }, { data: lists }, { data: goals }, { data: reviews }, { data: priv }, { data: kids }] = await Promise.all([
     supabase.from("employees").select("id, full_name, job_title").eq("manager_id", id).eq("is_active", true).order("full_name"),
     supabase.from("leave_balances").select("*").eq("employee_id", id).eq("year", yearSG()).order("leave_type"),
     supabase.from("checklists").select("id, kind, status, anchor_date").eq("employee_id", id).order("created_at", { ascending: false }),
     supabase.from("goals").select("*").eq("employee_id", id).order("created_at", { ascending: false }),
     supabase.from("reviews").select("id, status, cycle:review_cycles(name)").eq("employee_id", id).order("created_at", { ascending: false }),
+    supabase.from("employee_private").select("gender").eq("employee_id", id).maybeSingle(),
+    supabase.from("employee_children").select("*").eq("employee_id", id).order("date_of_birth"),
   ]);
 
   const showBalances = (balances ?? []).filter((b) => Number(b.entitled_days) + Number(b.carried_over_days) > 0);
@@ -93,6 +96,14 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {(isMe || HR_ROLES.includes(me.role)) && (
+        <div className="card">
+          <h2>Family details</h2>
+          <p className="muted">Used to check eligibility for maternity, paternity, shared parental and childcare leave. Only the employee and HR can see this.</p>
+          <FamilyDetails employeeId={id} gender={(priv as Row | null)?.gender ?? null} children={(kids ?? []) as Row[]} />
         </div>
       )}
 

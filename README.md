@@ -82,7 +82,7 @@ To use your own people instead of the demo company, add them on the Staff page a
 
 ## Replace the defaults before go-live
 
-- **Entitlements**: HR > Entitlements. Defaults: annual 18 (unused days carry forward in full and can be used until the end of the following year; HR runs **Carry unused annual leave** each January), flexible wellness 3 (use within the same year, never carried forward), outpatient sick 14, hospitalisation 46, compassionate 3. Childcare leave is not offered.
+- **Entitlements**: HR > Entitlements. Defaults: annual 18 (unused days carry forward in full and can be used until the end of the following year; HR runs **Carry unused annual leave** each January), flexible wellness 3 (use within the same year, never carried forward), outpatient sick 14, hospitalisation 46, compassionate 3. Statutory family leave (see below) has no stored entitlement.
 - **Claim limits**: the per-line limits on `claim_categories` are placeholders for finance policy.
 - **Approval chain**: set "Reports to" for each person. Department Heads should report to the Director.
 
@@ -102,3 +102,12 @@ lib/                 Supabase clients, session helper, formatting
 middleware.ts        Session refresh and redirect to /login
 supabase/migrations/ Database schema, rules, RLS, seed data
 ```
+
+
+## MOM statutory family leave
+
+Maternity (80 days for a Singapore citizen child, else 60), paternity (20 days for births from 1 Apr 2025, else 10), shared parental (50 days for births from 1 Apr 2026, 30 days for births 1 Apr 2025 to 31 Mar 2026, within 12 months of birth), childcare (6 days, or 2 if the child is not a citizen, youngest child under 7) and extended childcare (2 days, youngest child 7 to 12). Days are working days on a 5-day week, so they are the weekly entitlement x 5.
+
+Eligibility is checked when someone applies, from **Family details** on the employee's profile (gender and each child's date of birth, citizenship and whether the parents are married). Employees and HR can edit it; nobody else can see it. Checks: 3 months of service (before the birth for maternity, paternity and shared parental; at the start date for childcare), gender, citizenship, marriage for paternity, age of the youngest child, and days already used for that child (or that year for childcare). Maternity, paternity and shared parental requests may span two calendar years.
+
+Not covered or not verified: adoption leave, unpaid infant care leave, paternity for births before April 2025 (treated as 10 days), and special cases (miscarriage, stillbirth, employees with under 3 months of service who may qualify for reduced pay). Confirm unusual cases with MOM.
